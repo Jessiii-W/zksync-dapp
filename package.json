@@ -1,0 +1,28 @@
+{
+  "name": "zksync-dapp",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "dev": "turbo run dev --parallel",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.7.6"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.28.2"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "react": "19.0.0",
+        "ethers": "6.16.0",
+        "typescript": "5.8.2",
+        "zksync-ethers": "^6.21.0"
+      }
+    }
+  }
+}

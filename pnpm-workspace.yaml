@@ -1,0 +1,5 @@
+# 告诉 pnpm 哪些目录是子包
+packages:
+  - "packages/*"
+  - "!packages/**/node_modules"
+  - "!packages/**/dist"
