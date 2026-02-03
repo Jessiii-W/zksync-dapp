@@ -1,0 +1,23 @@
+{
+  "name": "@zksync-dapp/sdk",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "ethers": "^6.16.0",
+    "zksync-ethers": "^6.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}
