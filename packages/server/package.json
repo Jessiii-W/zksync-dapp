@@ -1,0 +1,22 @@
+{
+  "name": "@zksync-dapp/server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@zksync-dapp/sdk": "workspace:*",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  }
+}
