@@ -1,7 +1,11 @@
 import express from "express";
 import cors from "cors";
-// @ts-expect-error - SDK 类型声明可能在构建后生成
-import { JessTokenSDK, createZkSyncProvider } from "@zksync-dapp/sdk";
+import { ethers } from "ethers";
+import {
+  JessTokenSDK,
+  StakingSDK,
+  createZkSyncProvider,
+} from "@zksync-dapp/sdk";
 
 const app = express();
 const PORT = 3001; // 后端服务端口
@@ -18,10 +22,6 @@ type TransferRecord = {
 };
 
 let transferHistory: TransferRecord[] = [];
-
-/**
- * 初始化zkSync合约事件监听
- */
 
 function initContractListener() {
   try {
@@ -49,6 +49,8 @@ function initContractListener() {
   }
 }
 
+// ---------- 现有 API ----------
+
 // API 1：获取所有转账记录
 app.get("/api/transfers", (req, res) => {
   res.json({
@@ -71,6 +73,64 @@ app.get("/api/token-info", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to get token info",
+    });
+  }
+});
+
+// API 3：质押池汇总（总质押量、奖励池余额）
+app.get("/api/staking/info", async (req, res) => {
+  try {
+    const provider = createZkSyncProvider();
+    const staking = new StakingSDK(provider);
+    const [totalStaked, rewardPool] = await Promise.all([
+      staking.totalStaked(),
+      staking.rewardPool(),
+    ]);
+    res.json({
+      success: true,
+      data: {
+        totalStaked: totalStaked.toString(),
+        totalStakedFormatted: ethers.formatEther(totalStaked),
+        rewardPool: rewardPool.toString(),
+        rewardPoolFormatted: ethers.formatEther(rewardPool),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to get staking info",
+    });
+  }
+});
+
+// API 4：指定地址的质押信息与待领收益
+app.get("/api/staking/user/:address", async (req, res) => {
+  const address = req.params.address;
+  if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) {
+    res.status(400).json({ success: false, message: "Invalid address" });
+    return;
+  }
+  try {
+    const provider = createZkSyncProvider();
+    const staking = new StakingSDK(provider);
+    const [userStake, pendingReward] = await Promise.all([
+      staking.userStake(address),
+      staking.pendingReward(address),
+    ]);
+    res.json({
+      success: true,
+      data: {
+        balance: userStake.balance.toString(),
+        balanceFormatted: ethers.formatEther(userStake.balance),
+        stakeTime: userStake.stakeTime.toString(),
+        pendingReward: pendingReward.toString(),
+        pendingRewardFormatted: ethers.formatEther(pendingReward),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to get user staking data",
     });
   }
 });
